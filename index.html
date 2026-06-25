@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Previsión meteorológica para montaña en Euskadi y Navarra">
+  <meta name="theme-color" content="#0f1117">
+  <title>TontorApp — Meteorología de Montaña</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Welcome Screen -->
+<div id="welcome-screen" class="hidden overlay-screen">
+  <div class="welcome-box">
+    <div class="welcome-logo">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <polygon points="32,4 60,56 4,56" fill="#3b82f6" opacity="0.2"/>
+        <polygon points="32,4 60,56 4,56" fill="none" stroke="#3b82f6" stroke-width="2"/>
+        <polygon points="32,18 50,50 14,50" fill="#3b82f6" opacity="0.5"/>
+        <polygon points="32,18 50,50 14,50" fill="none" stroke="#60a5fa" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <h1>TontorApp</h1>
+    <p class="welcome-subtitle">Meteorología técnica para senderismo y trail running en Euskadi y Navarra</p>
+    <div class="welcome-form">
+      <label for="welcome-api-key">API Key de Anthropic (opcional — para análisis IA)</label>
+      <input type="password" id="welcome-api-key" placeholder="sk-ant-..." autocomplete="off">
+      <p class="hint">Obtén tu clave en <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a></p>
+    </div>
+    <div class="welcome-actions">
+      <button class="btn-primary" onclick="saveApiKey()">Continuar con IA</button>
+      <button class="btn-ghost" onclick="skipAI()">Continuar sin IA</button>
+    </div>
+  </div>
+</div>
+
+<!-- App Shell -->
+<div id="app">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <svg width="28" height="28" viewBox="0 0 64 64" fill="none">
+        <polygon points="32,4 60,56 4,56" fill="#3b82f6" opacity="0.3"/>
+        <polygon points="32,4 60,56 4,56" fill="none" stroke="#3b82f6" stroke-width="2"/>
+        <polygon points="32,18 50,50 14,50" fill="#3b82f6" opacity="0.6"/>
+      </svg>
+      <span class="app-title">TontorApp</span>
+    </div>
+    <div class="header-right">
+      <button class="btn-icon" id="btn-reload-data" title="Actualizar datos">↻</button>
+    </div>
+  </header>
+
+  <!-- Desktop Tabs (top) -->
+  <nav class="tabs-desktop">
+    <button class="tab-btn active" data-tab="mountains">⛰ Cumbres</button>
+    <button class="tab-btn" data-tab="radar">🌧 Radar</button>
+    <button class="tab-btn" data-tab="settings">⚙ Ajustes</button>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="app-main">
+
+    <!-- Tab: Cumbres -->
+    <div id="tab-mountains" class="tab-content">
+      <!-- Map -->
+      <div class="map-container">
+        <div id="main-map"></div>
+        <button class="btn-recenter" id="btn-recenter" title="Recentrar">⊕</button>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <select id="filter-zone" class="filter-select">
+          <option value="all">Todas las zonas</option>
+          <option value="Gipuzkoa">Gipuzkoa</option>
+          <option value="Bizkaia">Bizkaia</option>
+          <option value="Navarra">Navarra</option>
+          <option value="Personalizada">Personalizadas</option>
+          <option value="favorites">Solo favoritas</option>
+        </select>
+        <select id="sort-select" class="filter-select">
+          <option value="verdict">Por veredicto</option>
+          <option value="zone">Por zona</option>
+          <option value="altitude">Por altitud</option>
+        </select>
+        <label class="toggle-label">
+          <input type="checkbox" id="fav-first"> Favoritas primero
+        </label>
+      </div>
+
+      <!-- Add Mountain -->
+      <div class="add-bar">
+        <button class="btn-ghost btn-sm" id="btn-add-mountain">+ Añadir cumbre</button>
+      </div>
+      <div id="add-mountain-panel" class="hidden form-panel">
+        <form id="add-mountain-form">
+          <div class="form-row">
+            <input name="name" placeholder="Nombre" required>
+            <input name="altitude" type="number" placeholder="Altitud (m)" required>
+          </div>
+          <div class="form-row">
+            <input name="lat" type="number" step="0.0001" placeholder="Latitud" required>
+            <input name="lon" type="number" step="0.0001" placeholder="Longitud" required>
+          </div>
+          <input name="baseName" placeholder="Nombre del pueblo base (opcional)">
+          <div class="form-actions">
+            <button type="submit" class="btn-primary btn-sm">Añadir</button>
+            <button type="button" class="btn-ghost btn-sm" id="btn-cancel-add">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Mountain Cards -->
+      <div id="mountains-list" class="mountains-list"></div>
+    </div>
+
+    <!-- Tab: Radar -->
+    <div id="tab-radar" class="tab-content hidden">
+      <div class="radar-container">
+        <div id="radar-map"></div>
+        <div id="radar-status" class="radar-status hidden">
+          ⚠ Radar no disponible temporalmente
+        </div>
+        <div class="radar-controls">
+          <div class="radar-info">
+            <span id="radar-frame-type" class="radar-frame-type past">Dato real</span>
+            <span id="radar-time-label">—</span>
+          </div>
+          <div class="radar-slider-wrap">
+            <div id="radar-timeline" class="radar-timeline"></div>
+            <input type="range" id="radar-slider" class="radar-slider" min="0" max="10" value="0">
+          </div>
+          <div class="radar-buttons">
+            <button id="btn-radar-play" class="btn-play" onclick="toggleRadarAnimation()">▶ Play</button>
+            <button class="btn-icon" onclick="resetRadarView()" title="Recentrar">⊕</button>
+          </div>
+        </div>
+        <div class="radar-legend">
+          <div class="legend-title">mm/h</div>
+          <div class="legend-scale">
+            <span class="l-green">0.1</span>
+            <span class="l-yellow">1</span>
+            <span class="l-orange">4</span>
+            <span class="l-red">16</span>
+            <span class="l-purple">50+</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Ajustes -->
+    <div id="tab-settings" class="tab-content hidden">
+      <div class="settings-page">
+        <h2>Ajustes</h2>
+
+        <section class="settings-section">
+          <h3>Anthropic API</h3>
+          <label>API Key</label>
+          <div class="input-row">
+            <input type="password" id="settings-api-key" placeholder="sk-ant-…" autocomplete="off">
+            <button class="btn-primary btn-sm" id="btn-save-key">Guardar</button>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <h3>Análisis IA</h3>
+          <label class="toggle-label large">
+            <input type="checkbox" id="toggle-ai">
+            Activar textos explicativos con IA
+          </label>
+          <p class="hint">Los textos se generan al abrir el detalle de cada cumbre.</p>
+        </section>
+
+        <section class="settings-section">
+          <h3>Datos</h3>
+          <p id="last-update-text" class="hint">—</p>
+          <button class="btn-ghost" id="btn-clear-cache">Limpiar caché</button>
+        </section>
+
+        <section class="settings-section">
+          <h3>Instalar PWA</h3>
+          <p class="hint">
+            <strong>iOS:</strong> Safari → compartir → «Añadir a pantalla de inicio»<br>
+            <strong>Android:</strong> Menú del navegador → «Instalar app»
+          </p>
+          <a href="README.md" target="_blank" class="btn-ghost">Ver instrucciones completas</a>
+        </section>
+
+        <section class="settings-section">
+          <h3>Info</h3>
+          <p class="hint">Versión: <span id="app-version">1.0.0</span></p>
+        </section>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="tabs-mobile">
+    <button class="tab-btn active" data-tab="mountains">
+      <span class="tab-icon">⛰</span>
+      <span class="tab-label">Cumbres</span>
+    </button>
+    <button class="tab-btn" data-tab="radar">
+      <span class="tab-icon">🌧</span>
+      <span class="tab-label">Radar</span>
+    </button>
+    <button class="tab-btn" data-tab="settings">
+      <span class="tab-icon">⚙</span>
+      <span class="tab-label">Ajustes</span>
+    </button>
+  </nav>
+
+</div>
+
+<!-- Detail Panel -->
+<div id="detail-overlay" class="detail-overlay hidden" onclick="closeDetail()"></div>
+<div id="detail-panel" class="detail-panel">
+  <div class="detail-header">
+    <button class="btn-close" onclick="closeDetail()">✕</button>
+    <div>
+      <h2 id="detail-title">—</h2>
+      <p id="detail-subtitle" class="detail-sub">—</p>
+    </div>
+    <div id="detail-verdict" class="detail-verdict">—</div>
+  </div>
+  <div class="detail-body">
+    <!-- AI Briefing -->
+    <div id="detail-ai" class="detail-section">
+      <div class="ai-loading">Generando análisis IA…</div>
+    </div>
+
+    <!-- Charts -->
+    <div class="detail-section">
+      <h3>Temperatura por cotas</h3>
+      <div class="chart-wrap"><canvas id="chart-temp"></canvas></div>
+    </div>
+    <div class="detail-section">
+      <h3>Viento en cumbre</h3>
+      <div class="chart-wrap"><canvas id="chart-wind"></canvas></div>
+    </div>
+    <div class="detail-section">
+      <h3>Precipitación</h3>
+      <div class="chart-wrap"><canvas id="chart-precip"></canvas></div>
+    </div>
+    <div class="detail-section">
+      <h3>Sensación térmica</h3>
+      <div class="chart-wrap"><canvas id="chart-apparent"></canvas></div>
+    </div>
+    <div class="detail-section">
+      <h3>Visibilidad</h3>
+      <div class="chart-wrap"><canvas id="chart-visibility"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="mountains.js"></script>
+<script src="weather.js"></script>
+<script src="ai.js"></script>
+<script src="charts.js"></script>
+<script src="radar.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

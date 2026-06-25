@@ -1,0 +1,26 @@
+{
+  "name": "TontorApp — Meteorología de Montaña",
+  "short_name": "TontorApp",
+  "description": "Previsión meteorológica para senderismo y trail running en Euskadi y Navarra",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0f1117",
+  "background_color": "#0f1117",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["weather", "sports", "navigation"]
+}
