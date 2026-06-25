@@ -4,10 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Previsión meteorológica para montaña en Euskadi y Navarra">
-  <meta name="theme-color" content="#0f1117">
+  <meta name="theme-color" content="#0B6FB8">
   <title>TontorApp — Meteorología de Montaña</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -52,6 +55,7 @@
       <span class="app-title">TontorApp</span>
     </div>
     <div class="header-right">
+      <button class="btn-install hidden" id="btn-install" onclick="installApp()">⬇ Instalar app</button>
       <button class="btn-icon" id="btn-reload-data" title="Actualizar datos">↻</button>
     </div>
   </header>
@@ -59,7 +63,6 @@
   <!-- Desktop Tabs (top) -->
   <nav class="tabs-desktop">
     <button class="tab-btn active" data-tab="mountains">⛰ Cumbres</button>
-    <button class="tab-btn" data-tab="radar">🌧 Radar</button>
     <button class="tab-btn" data-tab="settings">⚙ Ajustes</button>
   </nav>
 
@@ -120,40 +123,6 @@
       <div id="mountains-list" class="mountains-list"></div>
     </div>
 
-    <!-- Tab: Radar -->
-    <div id="tab-radar" class="tab-content hidden">
-      <div class="radar-container">
-        <div id="radar-map"></div>
-        <div id="radar-status" class="radar-status hidden">
-          ⚠ Radar no disponible temporalmente
-        </div>
-        <div class="radar-controls">
-          <div class="radar-info">
-            <span id="radar-frame-type" class="radar-frame-type past">Dato real</span>
-            <span id="radar-time-label">—</span>
-          </div>
-          <div class="radar-slider-wrap">
-            <div id="radar-timeline" class="radar-timeline"></div>
-            <input type="range" id="radar-slider" class="radar-slider" min="0" max="10" value="0">
-          </div>
-          <div class="radar-buttons">
-            <button id="btn-radar-play" class="btn-play" onclick="toggleRadarAnimation()">▶ Play</button>
-            <button class="btn-icon" onclick="resetRadarView()" title="Recentrar">⊕</button>
-          </div>
-        </div>
-        <div class="radar-legend">
-          <div class="legend-title">mm/h</div>
-          <div class="legend-scale">
-            <span class="l-green">0.1</span>
-            <span class="l-yellow">1</span>
-            <span class="l-orange">4</span>
-            <span class="l-red">16</span>
-            <span class="l-purple">50+</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Tab: Ajustes -->
     <div id="tab-settings" class="tab-content hidden">
       <div class="settings-page">
@@ -206,10 +175,6 @@
     <button class="tab-btn active" data-tab="mountains">
       <span class="tab-icon">⛰</span>
       <span class="tab-label">Cumbres</span>
-    </button>
-    <button class="tab-btn" data-tab="radar">
-      <span class="tab-icon">🌧</span>
-      <span class="tab-label">Radar</span>
     </button>
     <button class="tab-btn" data-tab="settings">
       <span class="tab-icon">⚙</span>
@@ -269,7 +234,6 @@
 <script src="weather.js"></script>
 <script src="ai.js"></script>
 <script src="charts.js"></script>
-<script src="radar.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

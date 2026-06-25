@@ -3,23 +3,23 @@ const CHART_DEFAULTS = {
   maintainAspectRatio: false,
   animation: { duration: 300 },
   plugins: {
-    legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+    legend: { labels: { color: '#6C7A86', font: { size: 11, family: "'IBM Plex Mono', monospace" } } },
     tooltip: {
-      backgroundColor: '#1e293b',
-      titleColor: '#e2e8f0',
-      bodyColor: '#94a3b8',
-      borderColor: '#334155',
+      backgroundColor: '#16202B',
+      titleColor: '#FFFFFF',
+      bodyColor: '#DCE3E9',
+      borderColor: '#2d3748',
       borderWidth: 1
     }
   },
   scales: {
     x: {
-      ticks: { color: '#64748b', maxTicksLimit: 8 },
-      grid: { color: '#1e293b' }
+      ticks: { color: '#8A96A2', maxTicksLimit: 8, font: { family: "'IBM Plex Mono', monospace", size: 10 } },
+      grid: { color: '#E7ECF0' }
     },
     y: {
-      ticks: { color: '#64748b' },
-      grid: { color: '#1e293b' }
+      ticks: { color: '#8A96A2', font: { family: "'IBM Plex Mono', monospace", size: 10 } },
+      grid: { color: '#E7ECF0' }
     }
   }
 };
@@ -28,7 +28,7 @@ function getChartColors() {
   return {
     base: '#60a5fa', mid: '#a78bfa', summit: '#f472b6',
     wind: '#38bdf8', gust: '#f59e0b', precip: '#3b82f6',
-    snow: '#e2e8f0', apparent: '#fb923c', visibility: '#10b981',
+    snow: '#94a3b8', apparent: '#fb923c', visibility: '#10b981',
     freezing: '#818cf8'
   };
 }
@@ -77,11 +77,11 @@ function renderTemperatureChart(canvasId, hourlyData) {
       ...CHART_DEFAULTS,
       plugins: {
         ...CHART_DEFAULTS.plugins,
-        title: { display: true, text: 'Temperatura por cotas (°C)', color: '#e2e8f0' }
+        title: { display: true, text: 'Temperatura por cotas (°C)', color: '#16202B' }
       },
       scales: {
         ...CHART_DEFAULTS.scales,
-        y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '°C', color: '#64748b' } }
+        y: { ...CHART_DEFAULTS.scales.y, title: { display: true, text: '°C', color: '#8A96A2' } }
       }
     }
   });
@@ -116,7 +116,7 @@ function renderWindChart(canvasId, hourlyData) {
       ...CHART_DEFAULTS,
       plugins: {
         ...CHART_DEFAULTS.plugins,
-        title: { display: true, text: 'Viento en cumbre (km/h)', color: '#e2e8f0' },
+        title: { display: true, text: 'Viento en cumbre (km/h)', color: '#16202B' },
         annotation: {
           annotations: {
             line50: {
@@ -161,7 +161,7 @@ function renderPrecipChart(canvasId, hourlyData) {
       ...CHART_DEFAULTS,
       plugins: {
         ...CHART_DEFAULTS.plugins,
-        title: { display: true, text: 'Precipitación en cumbre', color: '#e2e8f0' }
+        title: { display: true, text: 'Precipitación en cumbre', color: '#16202B' }
       },
       scales: {
         ...CHART_DEFAULTS.scales,
@@ -198,7 +198,7 @@ function renderApparentTempChart(canvasId, hourlyData) {
       ...CHART_DEFAULTS,
       plugins: {
         ...CHART_DEFAULTS.plugins,
-        title: { display: true, text: 'Temperatura vs Sensación térmica (°C)', color: '#e2e8f0' }
+        title: { display: true, text: 'Temperatura vs Sensación térmica (°C)', color: '#16202B' }
       }
     }
   });
@@ -227,13 +227,13 @@ function renderVisibilityChart(canvasId, hourlyData) {
       ...CHART_DEFAULTS,
       plugins: {
         ...CHART_DEFAULTS.plugins,
-        title: { display: true, text: 'Visibilidad en cumbre (km)', color: '#e2e8f0' }
+        title: { display: true, text: 'Visibilidad en cumbre (km)', color: '#16202B' }
       },
       scales: {
         ...CHART_DEFAULTS.scales,
         y: {
           ...CHART_DEFAULTS.scales.y, min: 0,
-          title: { display: true, text: 'km', color: '#64748b' }
+          title: { display: true, text: 'km', color: '#8A96A2' }
         }
       }
     }

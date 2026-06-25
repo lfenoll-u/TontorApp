@@ -72,11 +72,6 @@ function switchTab(tab) {
     b.classList.toggle('active', b.dataset.tab === tab);
   });
 
-  if (tab === 'radar') {
-    const mountains = getMountains();
-    setTimeout(() => initRadar(mountains), 100);
-  }
-
   if (tab === 'mountains' && mainMap) {
     setTimeout(() => mainMap.invalidateSize(), 100);
   }
@@ -516,4 +511,35 @@ if ('serviceWorker' in navigator) {
       .then(reg => console.log('SW registered'))
       .catch(err => console.error('SW error', err));
   });
+}
+
+// ---- PWA Install ----
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  document.getElementById('btn-install')?.classList.remove('hidden');
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  document.getElementById('btn-install')?.classList.add('hidden');
+  showToast('¡TontorApp instalada correctamente!');
+});
+
+window.installApp = async function() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    document.getElementById('btn-install')?.classList.add('hidden');
+  } else {
+    showToast('iOS: Safari → Compartir → «Añadir a inicio»', 5000);
+  }
+};
+
+// Always show install button on iOS Safari (beforeinstallprompt never fires there)
+if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
+  document.getElementById('btn-install')?.classList.remove('hidden');
 }
