@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tontorapp-v1';
+const CACHE_NAME = 'tontorapp-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -8,7 +8,6 @@ const STATIC_ASSETS = [
   '/weather.js',
   '/ai.js',
   '/charts.js',
-  '/radar.js',
   '/manifest.json',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
