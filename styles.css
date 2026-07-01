@@ -359,6 +359,13 @@ body.panel-open { overflow: hidden; }
 
 /* AI Briefing */
 .ai-loading, .ai-unavailable { color: var(--text-dim); font-size: 0.9rem; padding: 16px; text-align: center; }
+
+/* AI connection test */
+.test-connection-btn { margin-top: 10px; width: auto; }
+.test-result { font-weight: 600; }
+.test-result.hidden { display: none; }
+.test-result.test-ok { color: var(--green); }
+.test-result.test-error { color: var(--red); }
 .ai-briefing { display: flex; flex-direction: column; gap: 14px; }
 .ai-section h4 {
   font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px;

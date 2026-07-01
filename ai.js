@@ -1,5 +1,52 @@
 const AI_CACHE = {};
 
+function mapAIErrorMessage(status, detail) {
+  switch (status) {
+    case 401: return 'API key inválida o revocada.';
+    case 403: return 'La API key no tiene permiso para usar este modelo.';
+    case 404: return 'Modelo no encontrado (puede haber sido retirado).';
+    case 413: return 'Petición demasiado grande.';
+    case 429: return 'Límite de peticiones alcanzado. Espera un momento y vuelve a intentarlo.';
+    default:
+      if (status >= 500) return 'Error del servidor de Anthropic. Reinténtalo más tarde.';
+      return detail || `Error HTTP ${status}`;
+  }
+}
+
+async function testAIConnection() {
+  const apiKey = localStorage.getItem('anthropicApiKey');
+  if (!apiKey) return { ok: false, message: 'No hay ninguna API key guardada.' };
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-calls': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 8,
+        messages: [{ role: 'user', content: 'Responde solo con la palabra: ok' }]
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      const detail = err.error?.message || `HTTP ${response.status}`;
+      return { ok: false, message: mapAIErrorMessage(response.status, detail) };
+    }
+
+    const data = await response.json();
+    const text = data.content?.[0]?.text?.trim() || '(sin texto)';
+    return { ok: true, message: `Conexión correcta. Respuesta de prueba: "${text}"` };
+  } catch (err) {
+    return { ok: false, message: 'No se pudo contactar con la API (red, CORS o sin conexión).' };
+  }
+}
+
 async function generateMountainBriefing(mountain, weatherData, verdict, dayOffset = 0) {
   const cacheKey = `${mountain.id}-${dayOffset}-${new Date().toDateString()}`;
   if (AI_CACHE[cacheKey]) return AI_CACHE[cacheKey];

@@ -468,6 +468,24 @@ function setupSettings() {
     }
   });
 
+  document.getElementById('btn-test-connection')?.addEventListener('click', async () => {
+    const btn = document.getElementById('btn-test-connection');
+    const resultEl = document.getElementById('test-connection-result');
+    if (!btn || !resultEl) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Probando…';
+    resultEl.classList.remove('hidden', 'test-ok', 'test-error');
+    resultEl.textContent = 'Conectando con la API de Anthropic…';
+
+    const result = await testAIConnection();
+
+    resultEl.textContent = result.message;
+    resultEl.classList.add(result.ok ? 'test-ok' : 'test-error');
+    btn.disabled = false;
+    btn.textContent = 'Probar conexión IA';
+  });
+
   const aiToggle = document.getElementById('toggle-ai');
   if (aiToggle) {
     aiToggle.checked = localStorage.getItem('aiEnabled') !== 'false';
