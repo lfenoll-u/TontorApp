@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Previsión meteorológica para montaña en Euskadi y Navarra">
-  <meta name="theme-color" content="#0B6FB8">
+  <meta name="theme-color" content="#185C31">
   <title>TontorApp — Meteorología de Montaña</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,11 +20,12 @@
 <div id="welcome-screen" class="hidden overlay-screen">
   <div class="welcome-box">
     <div class="welcome-logo">
-      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-        <polygon points="32,4 60,56 4,56" fill="#3b82f6" opacity="0.2"/>
-        <polygon points="32,4 60,56 4,56" fill="none" stroke="#3b82f6" stroke-width="2"/>
-        <polygon points="32,18 50,50 14,50" fill="#3b82f6" opacity="0.5"/>
-        <polygon points="32,18 50,50 14,50" fill="none" stroke="#60a5fa" stroke-width="1.5"/>
+      <svg width="64" height="64" viewBox="0 0 192 192">
+        <circle cx="96" cy="88" r="76" fill="none" stroke="#185C31" stroke-width="7"/>
+        <polygon points="96,30 44,146 148,146" fill="none" stroke="#185C31" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <polygon points="96,74 24,172 96,172" fill="#185C31"/>
+        <polygon points="96,74 96,172 168,172" fill="#9DB182"/>
+        <polyline points="112,112 125,97 132,114" fill="none" stroke="#185C31" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
       </svg>
     </div>
     <h1>TontorApp</h1>
@@ -47,10 +48,12 @@
   <!-- Header -->
   <header class="app-header">
     <div class="header-left">
-      <svg width="28" height="28" viewBox="0 0 64 64" fill="none">
-        <polygon points="32,4 60,56 4,56" fill="#3b82f6" opacity="0.3"/>
-        <polygon points="32,4 60,56 4,56" fill="none" stroke="#3b82f6" stroke-width="2"/>
-        <polygon points="32,18 50,50 14,50" fill="#3b82f6" opacity="0.6"/>
+      <svg width="28" height="28" viewBox="0 0 192 192">
+        <circle cx="96" cy="88" r="76" fill="none" stroke="#185C31" stroke-width="7"/>
+        <polygon points="96,30 44,146 148,146" fill="none" stroke="#185C31" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <polygon points="96,74 24,172 96,172" fill="#185C31"/>
+        <polygon points="96,74 96,172 168,172" fill="#9DB182"/>
+        <polyline points="112,112 125,97 132,114" fill="none" stroke="#185C31" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
       </svg>
       <span class="app-title">TontorApp</span>
     </div>
